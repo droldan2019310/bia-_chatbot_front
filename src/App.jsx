@@ -1,21 +1,22 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
 import { sendChatMessage } from './services/chatService';
-import { BiaArc } from './components/Logo';
 import { TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakToggle, useTweaks } from './components/TweaksPanel';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import eviLogo from './assets/evi-logo.png';
+import evyPie from './assets/evy-pie.png';
 
 const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "theme": "light",
-  "accent": "magenta",
+  "accent": "blue",
   "density": "comfy",
   "showSuggestions": true,
-  "rotateLogo": true,
+  "rotateLogo": false,
   "headerStyle": "minimal"
 }/*EDITMODE-END*/;
 
 // ── BIA+ knowledge — fed into Claude as system prompt ─────────────────────
-const BIA_SYSTEM = `Eres BIA+, un asistente virtual del proyecto BIA+.
+const BIA_SYSTEM = `Eres Evy, la asistente virtual oficial del proyecto BIA+.
 BIA+ es un equipo cuyo lema es "ACTUALIZAMOS PARA OPTIMIZARNOS". El equipo
 está presentando su propuesta a sponsors y jueces y este chatbot existe
 para que ellos puedan explorar la solución con calma fuera de las
@@ -45,6 +46,7 @@ const SUGGESTIONS = [
 ];
 
 const ACCENTS = {
+  blue:    { name:'Azul',    solid:'#00B4D8', soft:'#E0FBFC', deep:'#0077B6' },
   magenta: { name:'Magenta', solid:'#E0319A', soft:'#FCE4EF', deep:'#C42A86' },
   purple:  { name:'Morado',  solid:'#A855D9', soft:'#F0DEFA', deep:'#5B1E82' },
   yellow:  { name:'Amarillo',solid:'#F0B100', soft:'#FFF4B8', deep:'#8A6500' },
@@ -170,7 +172,7 @@ function Header({ t, onReset, hasChat, accent }) {
     }}>
       <div style={{ display:'flex', alignItems:'center', gap:14 }}>
         <span style={{ display:'inline-flex' }}>
-          <BiaArc size={38} spinning={t.rotateLogo} />
+          <img src={eviLogo} alt="Evy Logo" style={{ height: 38, objectFit: 'contain' }} />
         </span>
         <div style={{ display:'flex', flexDirection:'column', lineHeight:1.05 }}>
           <span style={{
@@ -179,7 +181,7 @@ function Header({ t, onReset, hasChat, accent }) {
           }}>
             BIA<span style={{ color: accent.solid }}>+</span>
             <span style={{ fontWeight:500, color:'var(--ink-500)', marginLeft:10, fontSize:13 }}>
-              Asistente
+              Evy
             </span>
           </span>
           {t.headerStyle === 'full' && (
@@ -239,14 +241,7 @@ function Welcome({ accent, t, onPick }) {
       gap:32
     }}>
       <div style={{ position:'relative' }}>
-        <BiaArc size={150} spinning={t.rotateLogo} />
-        <span style={{
-          position:'absolute', inset:0, display:'flex', alignItems:'center',
-          justifyContent:'center', fontWeight:800, fontSize:42,
-          color:'var(--ink-900)', letterSpacing:'-0.03em'
-        }}>
-          BIA<span style={{ color: accent.solid, marginLeft:1 }}>+</span>
-        </span>
+        <img src={evyPie} alt="Evy" style={{ height: 260, objectFit: 'contain' }} />
       </div>
 
       <div style={{ maxWidth:560, display:'flex', flexDirection:'column', gap:14 }}>
@@ -255,10 +250,10 @@ function Welcome({ accent, t, onPick }) {
           color:'var(--ink-900)', textWrap:'balance'
         }}>
           Hola — soy <span style={{
-            background:`linear-gradient(120deg, ${accent.solid} 0%, var(--purple-500) 70%)`,
+            background:`linear-gradient(120deg, ${accent.solid} 0%, var(--blue-500) 70%)`,
             WebkitBackgroundClip:'text', WebkitTextFillColor:'transparent',
             backgroundClip:'text'
-          }}>BIA+ Asistente</span>
+          }}>Evy</span>
         </h1>
         <p style={{
           margin:0, fontSize:16, lineHeight:1.55, color:'var(--ink-500)',
@@ -364,7 +359,7 @@ function Avatar({ accent, size=32 }) {
   return (
     <span style={{
       width:size, height:size, borderRadius:'50%',
-      background:`conic-gradient(from 210deg, ${accent.solid}, var(--purple-500), var(--yellow-500), ${accent.solid})`,
+      background:`conic-gradient(from 210deg, ${accent.solid}, var(--blue-500), var(--blue-300), ${accent.solid})`,
       flexShrink:0,
       display:'inline-flex', alignItems:'center', justifyContent:'center',
       padding:2
@@ -373,10 +368,10 @@ function Avatar({ accent, size=32 }) {
         width:'100%', height:'100%', borderRadius:'50%',
         background:'var(--paper)', display:'inline-flex',
         alignItems:'center', justifyContent:'center',
-        fontWeight:800, fontSize:size*0.42, color:'var(--ink-900)',
+        fontWeight:800, fontSize:size*0.4, color:'var(--ink-900)',
         letterSpacing:'-0.04em'
       }}>
-        B<span style={{ color: accent.solid }}>+</span>
+        Evy
       </span>
     </span>
   );
@@ -394,7 +389,7 @@ function Bubble({ msg, accent }) {
         maxWidth:'72%', padding:'12px 16px',
         borderRadius: isUser ? '18px 18px 4px 18px' : '18px 18px 18px 4px',
         background: isUser
-          ? `linear-gradient(135deg, ${accent.solid} 0%, var(--purple-500) 110%)`
+          ? `linear-gradient(135deg, ${accent.solid} 0%, var(--blue-500) 110%)`
           : 'var(--paper-2)',
         border: isUser ? 'none' : '1px solid var(--line)',
         color: isUser ? '#fff' : 'var(--ink-900)',
@@ -465,7 +460,7 @@ function Composer({ input, setInput, onSend, busy, accent, started, inputRef }) 
               width:42, height:42, borderRadius:13, border:'none',
               cursor: input.trim() && !busy ? 'pointer' : 'default',
               background: input.trim() && !busy
-                ? `linear-gradient(135deg, ${accent.solid} 0%, var(--purple-500) 110%)`
+                ? `linear-gradient(135deg, ${accent.solid} 0%, var(--blue-500) 110%)`
                 : 'var(--line-strong)',
               color:'#fff', display:'inline-flex', alignItems:'center',
               justifyContent:'center', flexShrink:0,
@@ -510,9 +505,9 @@ function Tweaks({ t, setTweak }) {
 
       <TweakSection label="Color de acento" />
       <TweakColor label="Acento" value={ACCENTS[t.accent].solid}
-                  options={[ACCENTS.magenta.solid, ACCENTS.purple.solid, ACCENTS.yellow.solid]}
+                  options={[ACCENTS.blue.solid, ACCENTS.magenta.solid, ACCENTS.purple.solid, ACCENTS.yellow.solid]}
                   onChange={(v) => {
-                    const key = Object.entries(ACCENTS).find(([,a]) => a.solid === v)?.[0] || 'magenta';
+                    const key = Object.entries(ACCENTS).find(([,a]) => a.solid === v)?.[0] || 'blue';
                     setTweak('accent', key);
                   }} />
 

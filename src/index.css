@@ -4,6 +4,11 @@
   --purple-500:#8B3FB7;
   --purple-400:#A855D9;
   --purple-300:#C77DE8;
+  --blue-900:#003049;
+  --blue-700:#005A8D;
+  --blue-500:#0077B6;
+  --blue-400:#0096C7;
+  --blue-300:#00B4D8;
   --magenta-600:#C42A86;
   --magenta-500:#E0319A;
   --magenta-400:#EC5BB0;
@@ -11,14 +16,14 @@
   --yellow-400:#FFE45B;
   --pink-200:#F8C6DE;
   --pink-100:#FCE4EF;
-  --ink-900:#1A0828;
-  --ink-700:#3A1E50;
-  --ink-500:#6A4F80;
-  --ink-300:#A893B8;
-  --paper:#FBF8FD;
-  --paper-2:#F4ECF7;
-  --line:rgba(91,30,130,.10);
-  --line-strong:rgba(91,30,130,.18);
+  --ink-900:#0A192F;
+  --ink-700:#112240;
+  --ink-500:#495670;
+  --ink-300:#8892B0;
+  --paper:#F8FAFC;
+  --paper-2:#F1F5F9;
+  --line:rgba(0,119,182,.10);
+  --line-strong:rgba(0,119,182,.18);
 }
 *{box-sizing:border-box}
 html,body{margin:0;padding:0;height:100%;background:var(--paper);color:var(--ink-900);
@@ -32,29 +37,29 @@ button{font-family:inherit}
 .bg-orbit{position:fixed;inset:0;pointer-events:none;overflow:hidden;z-index:0}
 .bg-orbit::before,.bg-orbit::after{content:"";position:absolute;border-radius:50%;
   filter:blur(80px);opacity:.45}
-.bg-orbit::before{width:520px;height:520px;background:radial-gradient(circle,#E0319A 0%,transparent 65%);
+.bg-orbit::before{width:520px;height:520px;background:radial-gradient(circle,var(--blue-300) 0%,transparent 65%);
   top:-160px;left:-120px}
-.bg-orbit::after{width:620px;height:620px;background:radial-gradient(circle,#A855D9 0%,transparent 65%);
+.bg-orbit::after{width:620px;height:620px;background:radial-gradient(circle,var(--blue-500) 0%,transparent 65%);
   bottom:-220px;right:-160px}
 .bg-grain{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.5;
-  background-image:radial-gradient(circle at 1px 1px,rgba(91,30,130,.06) 1px,transparent 0);
+  background-image:radial-gradient(circle at 1px 1px,rgba(0,119,182,.06) 1px,transparent 0);
   background-size:22px 22px}
 
 /* dark mode */
 body.dark{background:#0F0518;color:#F5EAFB}
 body.dark{
-  --paper:#0F0518;
-  --paper-2:#1A0828;
-  --ink-900:#F5EAFB;
-  --ink-700:#D9C2EA;
-  --ink-500:#9F86B5;
-  --ink-300:#6A4F80;
-  --line:rgba(200,140,235,.14);
-  --line-strong:rgba(200,140,235,.22);
+  --paper:#0B1120;
+  --paper-2:#0F172A;
+  --ink-900:#F8FAFC;
+  --ink-700:#E2E8F0;
+  --ink-500:#94A3B8;
+  --ink-300:#475569;
+  --line:rgba(140,200,235,.14);
+  --line-strong:rgba(140,200,235,.22);
 }
 body.dark .bg-orbit::before{opacity:.35}
 body.dark .bg-orbit::after{opacity:.35}
-body.dark .bg-grain{opacity:.7;background-image:radial-gradient(circle at 1px 1px,rgba(200,140,235,.08) 1px,transparent 0)}
+body.dark .bg-grain{opacity:.7;background-image:radial-gradient(circle at 1px 1px,rgba(140,200,235,.08) 1px,transparent 0)}
 
 /* logo arcs */
 @keyframes orbitSpin{from{transform:rotate(0deg)}to{transform:rotate(360deg)}}
@@ -72,7 +77,7 @@ body.dark .bg-grain{opacity:.7;background-image:radial-gradient(circle at 1px 1p
 
 /* typing dots */
 @keyframes blink{0%,80%,100%{opacity:.25;transform:translateY(0)}40%{opacity:1;transform:translateY(-2px)}}
-.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--purple-500);margin:0 2px;
+.dot{display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--accent-solid);margin:0 2px;
   animation:blink 1.2s infinite}
 .dot:nth-child(2){animation-delay:.18s}
 .dot:nth-child(3){animation-delay:.36s}
@@ -85,7 +90,7 @@ body.dark .bg-grain{opacity:.7;background-image:radial-gradient(circle at 1px 1p
 @keyframes shimmer{0%{background-position:-200% 0}100%{background-position:200% 0}}
 
 /* focus ring */
-.focus-ring:focus-visible{outline:2px solid var(--magenta-500);outline-offset:2px;border-radius:14px}
+.focus-ring:focus-visible{outline:2px solid var(--accent-solid);outline-offset:2px;border-radius:14px}
 
 /* Markdown styles */
 .markdown-body {
@@ -109,7 +114,7 @@ body.dark .bg-grain{opacity:.7;background-image:radial-gradient(circle at 1px 1p
   margin-bottom: 4px;
 }
 .markdown-body a {
-  color: var(--magenta-500);
+  color: var(--accent-solid);
   text-decoration: none;
 }
 .markdown-body a:hover {
