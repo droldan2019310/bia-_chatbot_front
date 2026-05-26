@@ -3,6 +3,23 @@ import axios from 'axios';
 const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
 
 /**
+ * Autentica con el backend usando la contraseña global
+ */
+export async function login(password) {
+  try {
+    const response = await axios.post(`${backendUrl}/api/login`, { password }, {
+      headers: { 'Content-Type': 'application/json' }
+    });
+    return response.data.token;
+  } catch (error) {
+    if (error.response && error.response.status === 401) {
+      throw new Error("Contraseña incorrecta");
+    }
+    throw new Error("Error al conectar con el servidor");
+  }
+}
+
+/**
  * Envia el mensaje al backend proxy de chat
  * @param {string} message - El mensaje del usuario
  * @param {Array} history - Historial de chat en formato [{ role: "user" | "model", parts: [{ text: "..." }] }]
@@ -11,8 +28,10 @@ const backendUrl = import.meta.env.VITE_BACKEND_URL || 'http://localhost:3000';
  */
 export async function sendChatMessage(message, history = [], documentsMD = '') {
   try {
+    const token = localStorage.getItem('bia_token');
+    if (!token) throw new Error("Acceso denegado. Por favor, inicia sesión.");
+
     const payload = {
-      password: "BIA2026",
       userName: "Usuario", // O el nombre real si lo tienes en el estado
       message: message,
       history: history,
@@ -21,7 +40,8 @@ export async function sendChatMessage(message, history = [], documentsMD = '') {
 
     const response = await axios.post(`${backendUrl}/api/chat`, payload, {
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
       }
     });
 

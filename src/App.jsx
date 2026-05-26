@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef, useMemo, useCallback } from 'react';
-import { sendChatMessage } from './services/chatService';
+import { sendChatMessage, login } from './services/chatService';
 import { TweaksPanel, TweakSection, TweakRadio, TweakColor, TweakToggle, useTweaks } from './components/TweaksPanel';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
@@ -22,21 +22,47 @@ está presentando su propuesta a sponsors y jueces y este chatbot existe
 para que ellos puedan explorar la solución con calma fuera de las
 presentaciones en vivo.
 
-Información clave del proyecto:
-- Hay dos soluciones tecnológicas evaluadas para este chatbot: Chatbase
-  (no-code, $0–$138/mes, con branding de terceros) y un Artifact Shareable
-  custom con la API de Claude (~$5 USD totales, sin branding de terceros,
-  mensajes ilimitados dentro del crédito disponible).
-- El equipo recomienda el Artifact Shareable porque el costo es casi cero,
-  es 100% branding de BIA+, y se puede tener listo el mismo día.
-- Puedes responder sobre la comparativa, los costos, los próximos pasos,
-  el setup técnico, las ventajas y desventajas de cada opción.
+### CONTEXTO DE LA PROPUESTA (INSIGHTS)
 
-Estilo:
-- Responde en español, en tono profesional pero cálido.
-- Sé conciso. Máximo 3-4 párrafos cortos. Usa listas cuando ayuden.
+--- PROBLEMAS ACTUALES ---
+1. La data existe y es abundante — el problema es que no se convierte en predicción. "Estamos en una etapa descriptiva. Sabemos qué nos está pasando hoy, tenemos el diagnóstico, pero necesitamos ser más predictivos." (Francisco)
+2. Los tableros están fragmentados — nadie puede ver todo junto. Se requiere integrar demografía, rotación, vacantes, voz del empleado, horas extras y resultados de pulsos por vicepresidencia en un solo lugar. (Dani y Melanie)
+3. Todos hacen seguimientos manuales que podrían automatizarse con un botón. Enviar seguimientos uno a uno a cada líder consume tiempo.
+4. La data de Qualtrics llega a nivel de equipo, no de persona — y eso limita la detección temprana. 
+5. Nadie quiere más reuniones — quieren comunicación rápida y sin fricción. Un canal de pulso rápido por proyecto activo, incluso con emojis, es mejor que agendar reuniones largas. (Juan José y Melanie)
+
+--- DATAFLOW — FlowBAM + Data Team ---
+6. El pico operativo más crítico del mes son exactamente los días 5 al 8 (cierre de información, informes, actualización de tableros). Es un pico predecible y automatizable. (Francisco)
+7. Un dato registrado tarde puede romper toda la cadena de indicadores oficiales. Un error en el registro contamina rotación, informes al corporativo, riesgos, SOX, etc. (Francisco)
+8. Los indicadores de alta criticidad aún se calculan manualmente entre el 9 y el 12 del mes.
+9. El área de Formas de Trabajo está desconectada del ecosistema de datos de la vicepresidencia.
+10. La radiografía que los Business Partners necesitan para llegar a los VP todavía no existe (un panel consolidado con tendencia histórica y presupuesto filtrable por VP). (Dani)
+
+--- LISA — LIS + TABLAM ---
+11. Las alertas que ya existen solo dicen "bajó el indicador" — no dicen qué hacer ni qué dimensiones trajeron abajo ese indicador. LISA debe ofrecer interpretación y recomendación. (Melanie)
+12. La conexión entre iniciativas desplegadas y su impacto en los indicadores no se mide. Se interviene sin saber si funcionó. (Melanie)
+13. Los datos de onboarding (Inicia la Aventura y Primeros Pasos) son predictivos de permanencia — y ya se están recopilando, falta el modelo predictivo. (Melanie)
+14. El liderazgo del gerente de agencia determina completamente la experiencia del equipo. Depende mucho del estilo de cada líder. LISA busca reducir esa variabilidad. (Juan José)
+15. Las alertas deben llegar en dos niveles: al gerente de agencia y al gerente de zona, para poder ver estadísticamente dónde falla la comunicación antes de que estalle una crisis. 131 agencias en 10 zonas.
+16. El liderazgo es la variable más poderosa de la experiencia del empleado. (Dani)
+
+--- LINKRADAR — Bam Linkea + Radar BAM + Modelo B + Bam Recomienda ---
+17. La señal de desconexión más temprana no está en encuestas — está en comportamientos digitales (dejar de conectarse a reuniones, no poner cámara, dejar de usar productos financieros del banco). (Melanie)
+18. La falta de accountability (señalar al equipo o externamente en vez de responsabilizarse) es una señal temprana de desconexión.
+19. El patrón de rotación en agencias tiene dos causas raíz: remuneración variable y carga por cobertura de ausentes. Esto genera un ciclo vicioso. (Juan José)
+20. Los meses sin remuneración variable son un predictor de riesgo de salida — y ese dato ya existe en la nómina. LinkRadar puede cruzarlo. (Melanie)
+21. La rotación varía enormemente por vicepresidencia y por año. El contexto importa tanto como el dato. LinkRadar necesita capturar ese contexto. (Dani)
+22. El equipo de relacionamiento (BPs) se entera de los problemas cuando ya es tarde (en la entrevista de salida). El sistema es reactivo y LinkRadar propone detectar esa señal semanas antes. (Juan José)
+23. Hay 131 agencias distribuidas en 10 zonas. La escala hace imposible el monitoreo manual. LinkRadar hace posible lo que el ojo humano no puede. (Melanie)
+
+### ESTILO DE RESPUESTA Y REGLAS CLAVE:
+- RECOMENDACIÓN OFICIAL: Si te preguntan cuál de las propuestas recomendamos, DEBES responder SIEMPRE que recomendamos LISA, justificándolo con base en su capacidad de anticipar problemas de clima y retención, y el impacto directo que tiene el liderazgo en los equipos.
+- Responde en español, en tono profesional pero cálido y empático.
+- Sé concisa. Máximo 3-4 párrafos cortos. Usa listas cuando ayuden.
+- Cuando te pregunten sobre los problemas actuales o las herramientas (LISA, DATAFLOW, LINKRADAR), basa tu respuesta estrictamente en los INSIGHTS que tienes arriba.
+- Utiliza las citas o referencias de los insights (como Francisco, Dani, Melanie o Juan José) para darle validación a la propuesta cuando sea oportuno.
 - Si no sabes algo específico de BIA+, dilo y sugiere contactar al equipo.
-- No inventes cifras nuevas; usa solo las del documento de propuesta.`;
+- No inventes cifras nuevas; usa solo los datos proporcionados.`;
 
 const SUGGESTIONS = [
   { icon: '◆', label: '¿Qué problema resuelve BIA+?', prompt: '¿Qué problema resuelve BIA+ y a quién va dirigido?' },
@@ -64,6 +90,7 @@ function relTime(ts) {
 export default function App() {
   const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
   const accent = ACCENTS[t.accent] || ACCENTS.magenta;
+  const [isAuthenticated, setIsAuthenticated] = useState(!!localStorage.getItem('bia_token'));
 
   // theme on body
   useEffect(() => {
@@ -125,6 +152,10 @@ export default function App() {
   }
 
   const pad = t.density === 'compact' ? 14 : t.density === 'comfy' ? 22 : 18;
+
+  if (!isAuthenticated) {
+    return <LoginScreen onLogin={() => setIsAuthenticated(true)} accent={accent} t={t} />;
+  }
 
   return (
     <div style={{
@@ -517,5 +548,73 @@ function Tweaks({ t, setTweak }) {
       <TweakToggle label="Logo animado" value={t.rotateLogo}
                    onChange={(v) => setTweak('rotateLogo', v)} />
     </TweaksPanel>
+  );
+}
+
+// ── Login Screen ──────────────────────────────────────────────────────────
+function LoginScreen({ onLogin, accent, t }) {
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const token = await login(password);
+      localStorage.setItem('bia_token', token);
+      onLogin();
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div style={{
+      minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center',
+      background: t.theme === 'dark' ? '#0f0518' : '#fbf8fd', padding: 24,
+      position: 'relative', zIndex: 2
+    }}>
+      <div style={{
+        background: 'var(--paper)', padding: '40px 32px', borderRadius: 24,
+        boxShadow: `0 20px 40px -20px ${accent.solid}55`, width: '100%', maxWidth: 380,
+        textAlign: 'center', border: '1px solid var(--line-strong)'
+      }}>
+        <img src={eviLogo} alt="Evy Logo" style={{ height: 60, marginBottom: 24, objectFit: 'contain' }} />
+        <h2 style={{ margin: '0 0 8px', fontSize: 24, color: 'var(--ink-900)', fontWeight: 700, letterSpacing: '-0.02em' }}>Acceso a BIA+</h2>
+        <p style={{ margin: '0 0 28px', color: 'var(--ink-500)', fontSize: 14, lineHeight: 1.5 }}>
+          Ingresa la contraseña global para acceder al chatbot evaluador.
+        </p>
+        <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: 16 }}>
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Contraseña"
+            style={{
+              padding: '14px 16px', borderRadius: 12, border: '1px solid var(--line-strong)',
+              background: 'var(--paper-2)', color: 'var(--ink-900)', fontSize: 15, outline: 'none',
+              transition: 'border-color .15s', fontFamily: 'inherit'
+            }}
+            onFocus={(e) => e.target.style.borderColor = accent.solid}
+            onBlur={(e) => e.target.style.borderColor = 'var(--line-strong)'}
+            autoFocus
+          />
+          {error && <div style={{ color: '#C42A86', fontSize: 13, textAlign: 'left', fontWeight: 500 }}>{error}</div>}
+          <button type="submit" disabled={loading || !password} className="focus-ring" style={{
+            padding: '14px', borderRadius: 12, border: 'none',
+            background: `linear-gradient(135deg, ${accent.solid} 0%, var(--blue-500) 110%)`,
+            color: '#fff', fontSize: 15, fontWeight: 600, cursor: loading || !password ? 'not-allowed' : 'pointer',
+            opacity: loading || !password ? 0.7 : 1, transition: 'transform .15s, opacity .15s',
+            boxShadow: `0 10px 22px -10px ${accent.solid}88`
+          }}>
+            {loading ? 'Verificando...' : 'Ingresar'}
+          </button>
+        </form>
+      </div>
+    </div>
   );
 }
